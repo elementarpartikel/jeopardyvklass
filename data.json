@@ -1,0 +1,52 @@
+[
+    {
+        "category": "Kommunikation",
+        "questions": [
+            { "points": 100, "clue": "Här publicerar skolledare och lärare allmän information och veckobrev till vårdnadshavare.", "answer": "Vad är Nyheter?", "keywords": ["nyheter", "nyhet"] },
+            { "points": 200, "clue": "Det här går inte att skicka till vårdnadshavare inifrån Vklass, utan används bara mot elever och personal.", "answer": "Vad är direktmeddelanden?", "keywords": ["direktmeddelande", "meddelanden", "meddelande"] },
+            { "points": 300, "clue": "Här måste personal med tjänstetelefon lägga in sitt nummer för att det ska synas för andra.", "answer": "Vad är Inställningar?", "keywords": ["inställningar"] },
+            { "points": 400, "clue": "Detta kommunikationssätt kostar pengar för varje utskick och får endast användas vid akut information.", "answer": "Vad är SMS?", "keywords": ["sms"] },
+            { "points": 500, "clue": "Denna funktion ska specifikt INTE användas för att informera om läxor eller prov.", "answer": "Vad är Nyheter?", "keywords": ["nyheter"] }
+        ]
+    },
+    {
+        "category": "Närvaro & Ledighet",
+        "questions": [
+            { "points": 100, "clue": "Vid denna tidpunkt ska lärare senast registrera närvaro i systemet.", "answer": "Vad är vid lektionens start?", "keywords": ["start", "lektionens start", "början"] },
+            { "points": 200, "clue": "Detta skickas automatiskt till vårdnadshavare om en elev får ogiltig frånvaro på en hel lektion.", "answer": "Vad är SMS och push-notis?", "keywords": ["sms", "notis", "push"] },
+            { "points": 300, "clue": "Här gör vårdnadshavare ansökan om eleven behöver vara borta från skolan av personliga skäl.", "answer": "Vad är Ledighetsansökan?", "keywords": ["ledighetsansökan", "ledighet"] },
+            { "points": 400, "clue": "Detta ska läraren göra i närvarokvitteringen om en lektion inte blir av.", "answer": "Vad är att ställa in lektionen?", "keywords": ["ställa in", "inställd"] },
+            { "points": 500, "clue": "Denna typ av notis skickas alltid till eleven om en lektion markeras som inställd.", "answer": "Vad är en push-notis?", "keywords": ["push", "notis"] }
+        ]
+    },
+    {
+        "category": "Planering & Bedömning",
+        "questions": [
+            { "points": 100, "clue": "Denna kommunspecifika mall ska användas för alla pedagogiska planeringar i Vklass.", "answer": "Vad är Tyresös mall?", "keywords": ["tyresö", "tyresös mall", "mallen"] },
+            { "points": 200, "clue": "Detta ska man aldrig göra med historiska omdömen vid en ny omdömesperiod.", "answer": "Vad är att redigera dem?", "keywords": ["redigera", "ändra"] },
+            { "points": 300, "clue": "Denna bedömningsnivå tillkommer i åk 4-9 utöver 'behov av stöd' och 'godtagbara'.", "answer": "Vad är 'Mer än godtagbara kunskaper'?", "keywords": ["mer än godtagbara"] },
+            { "points": 400, "clue": "Från denna årskurs ska betygskriterier fyllas i i Vklass.", "answer": "Vad är årskurs 5?", "keywords": ["5", "fem", "åk 5"] },
+            { "points": 500, "clue": "Dessa matriser ska användas i åk 6-9 men får inte publiceras för vårdnadshavare.", "answer": "Vad är betygskriterier (kriteriematriser)?", "keywords": ["betygskriterier", "matriser"] }
+        ]
+    },
+    {
+        "category": "Fritidshem",
+        "questions": [
+            { "points": 100, "clue": "Denna personalgrupp ansvarar för att registrera korrekt tid när barn kommer och går.", "answer": "Vilka är fritidspedagoger?", "keywords": ["fritidspedagog", "fritidspedagoger"] },
+            { "points": 200, "clue": "Här fyller vårdnadshavare i de tider barnet ska vara på fritids.", "answer": "Vad är omsorgsschema?", "keywords": ["omsorgsschema", "schema"] },
+            { "points": 300, "clue": "Denna handling krävs av personalen för att dokumentera när barnet anländer till fritidshemmet.", "answer": "Vad är incheckning?", "keywords": ["incheckning", "checka in"] },
+            { "points": 400, "clue": "Detta ska uppdateras av vårdnadshavare inför lov och ledigheter efter påminnelse från administratör.", "answer": "Vad är omsorgsscheman (lovschema)?", "keywords": ["omsorgsschema", "lovschema", "schema"] },
+            { "points": 500, "clue": "Här hittar personalen samlat stöd och instruktioner för fritidshemmets funktioner.", "answer": "Vad är Vklass kunskapsbank?", "keywords": ["kunskapsbank", "support"] }
+        ]
+    },
+    {
+        "category": "Stöd & Administration",
+        "questions": [
+            { "points": 100, "clue": "Här kan alla användare se vad som serveras till lunch i skolan.", "answer": "Vad är matsedeln?", "keywords": ["matsedel", "matsedeln"] },
+            { "points": 200, "clue": "Detta krävs för extra säker inloggning när man ska skriva åtgärdsprogram.", "answer": "Vad är BankID?", "keywords": ["bankid", "e-legitimation"] },
+            { "points": 300, "clue": "Detta ska göras om en elev riskerar att inte nå målen trots extra anpassningar.", "answer": "Vad är att flagga för utredning?", "keywords": ["flagga", "utredning"] },
+            { "points": 400, "clue": "Så här skapas konton för långtidsvikarier (aldrig manuellt av enheten).", "answer": "Vad är via IST-administration?", "keywords": ["ist", "administration"] },
+            { "points": 500, "clue": "Hit ska man vända sig om en anställds e-postadress visas felaktigt i Vklass.", "answer": "Vem är skoladministratören?", "keywords": ["skoladmin", "administratör"] }
+        ]
+    }
+]
