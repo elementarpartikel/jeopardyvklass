@@ -8,7 +8,7 @@
     <style>
         :root {
             --bg-color: #f4f7f6;
-            --primary-gradient: linear-gradient(135deg, #005a92, #0082c8); /* Tyresö-inspirerad blå */
+            --primary-gradient: linear-gradient(135deg, #005a92, #0082c8);
             --secondary-gradient: linear-gradient(135deg, #0072bc, #3399ff);
             --card-bg: rgba(255, 255, 255, 0.9);
             --card-border: #d1d8e0;
@@ -165,6 +165,14 @@
 
         .btn-primary { background: #3498db; color: white; }
         .btn-success { background: #27ae60; color: white; }
+        .btn-voice { background: #e74c3c; color: white; font-size: 1.1rem; padding: 12px 25px; border-radius: 50px;}
+        .btn-voice.listening { animation: pulse 1.5s infinite; background: #c0392b; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
 
         .lobby-screen {
             position: fixed;
@@ -192,7 +200,7 @@
         <h1>Vklass Jeopardy</h1>
         <p>Tyresö kommuns riktlinjer för personal och elever</p>
         <div class="category-list" id="category-list">Laddar kategorier...</div>
-        <button class="btn btn-primary" style="font-size: 1.2rem;" id="btn-start-game">Starta Utbildningen</button>
+        <button class="btn btn-primary" style="font-size: 1.2rem;" id="btn-start-game">Starta Spelet</button>
     </div>
 
     <div id="game-container">
@@ -220,14 +228,20 @@
             <div class="modal-clue" id="modal-clue"></div>
             <div class="modal-answer" id="modal-answer"></div>
             
-            <button class="btn btn-primary" id="btn-show-answer">Visa Svar</button>
+            <div id="voice-section" style="margin: 20px 0;">
+                <button class="btn-voice" id="btn-voice">🎤 Svara med rösten</button>
+                <div id="voice-output" style="margin-top: 10px; font-style: italic; color: #7f8c8d;"></div>
+                <div id="voice-result" style="margin-top: 10px; font-size: 1.5rem; font-weight: bold;"></div>
+            </div>
+
+            <button class="btn btn-primary" id="btn-show-answer">Visa Svar Manuell</button>
             
             <div id="award-section" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
-                <p>Vem svarade rätt?</p>
+                <p style="margin-bottom: 10px;">Vem svarade rätt?</p>
                 <button class="btn btn-success" onclick="awardPoints(1)">Lag A</button>
                 <button class="btn btn-success" onclick="awardPoints(2)">Lag B</button>
                 <button class="btn btn-success" onclick="awardPoints(3)">Lag C</button>
-                <button class="btn" style="background:#bdc3c7;" onclick="closeModal()">Ingen</button>
+                <button class="btn" style="background:#bdc3c7;" onclick="closeModal()">Ingen / Stäng</button>
             </div>
         </div>
     </div>
@@ -238,17 +252,75 @@
         let scores = [0, 0, 0, 0];
         let currentPoints = 0;
         let activeCell = null;
+        let activeQuestion = null;
 
         const synth = window.speechSynthesis;
         const boardEl = document.getElementById('board');
         const modalOverlay = document.getElementById('modal-overlay');
         const btnStartGame = document.getElementById('btn-start-game');
 
+        const correctPhrases = [
+            "Helt rätt!",
+            "Snyggt jobbat, det är korrekt!",
+            "Klockrent svar!",
+            "Exakt, mycket bra!",
+            "Rätt svar, bra jobbat!"
+        ];
+
+        const wrongPhrases = [
+            "Tyvärr, det är fel.",
+            "Nära, men inte riktigt rätt.",
+            "Det var fel, bättre lycka nästa gång.",
+            "Tyvärr fel svar.",
+            "Nej, det stämmer inte."
+        ];
+
+        // Speech Recognition Setup
+        let recognition = null;
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+        } else if ('SpeechRecognition' in window) {
+            recognition = new SpeechRecognition();
+        }
+
+        if (recognition) {
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'sv-SE';
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('voice-output').textContent = "Du sa: '" + transcript + "'";
+                document.getElementById('btn-voice').classList.remove('listening');
+                document.getElementById('btn-voice').textContent = "🎤 Svara igen";
+                checkAnswer(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                document.getElementById('voice-output').textContent = "Ett fel uppstod: " + event.error;
+                document.getElementById('btn-voice').classList.remove('listening');
+                document.getElementById('btn-voice').textContent = "🎤 Försök igen";
+            };
+
+            document.getElementById('btn-voice').onclick = () => {
+                if (synth.speaking) synth.cancel();
+                try {
+                    recognition.start();
+                    document.getElementById('btn-voice').classList.add('listening');
+                    document.getElementById('btn-voice').textContent = "🎤 Lyssnar...";
+                    document.getElementById('voice-output').textContent = "Väntar på ljud...";
+                    document.getElementById('voice-result').textContent = "";
+                } catch(e) {
+                    console.error("Kunde inte starta mikrofonen", e);
+                }
+            };
+        }
+
         async function loadData() {
             try {
                 const response = await fetch('data.json');
                 allCategories = await response.json();
-                activeCategories = allCategories.slice(0, 5); // Tar de 5 första
+                activeCategories = allCategories.slice(0, 5); 
                 renderLobby();
             } catch (e) {
                 document.getElementById('category-list').innerHTML = "Kunde inte ladda data.json.";
@@ -270,19 +342,25 @@
             document.getElementById('lobby-screen').classList.add('hidden');
             document.getElementById('game-container').style.display = 'flex';
             initBoard();
-            speak("Välkomna till Vklass Jeopardy. Här testar vi era kunskaper om Tyresös riktlinjer.");
+
+            // Maffig Intro-röst
+            let catNames = activeCategories.map(c => c.category);
+            let catString = catNames.slice(0, -1).join(', ') + " och " + catNames[catNames.length - 1];
+            let team1Name = document.querySelector('#team1 .team-name').textContent;
+            
+            let introText = `Välkomna till dagens utbildnings-Jeopardy! Idag handlar det om ${catString}. ${team1Name}, varsågoda att börja. Och kom ihåg: det är jag som ger svaren, och ni ställer frågorna!`;
+            
+            speak(introText);
         };
 
         function initBoard() {
             boardEl.innerHTML = '';
-            // Rubriker
             activeCategories.forEach(cat => {
                 const el = document.createElement('div');
                 el.className = 'category';
                 el.textContent = cat.category;
                 boardEl.appendChild(el);
             });
-            // Celler
             for (let i = 0; i < 5; i++) {
                 activeCategories.forEach(cat => {
                     const q = cat.questions[i];
@@ -298,14 +376,48 @@
         function openQuestion(q, cell) {
             currentPoints = q.points;
             activeCell = cell;
+            activeQuestion = q;
+
             document.getElementById('modal-points').textContent = q.points + " Poäng";
             document.getElementById('modal-clue').textContent = q.clue;
             document.getElementById('modal-answer').textContent = q.answer;
+            
             document.getElementById('modal-answer').classList.remove('show');
             document.getElementById('award-section').style.display = 'none';
             document.getElementById('btn-show-answer').style.display = 'inline-block';
+            document.getElementById('voice-output').textContent = "";
+            document.getElementById('voice-result').textContent = "";
+            document.getElementById('btn-voice').textContent = "🎤 Svara med rösten";
+
             modalOverlay.classList.add('active');
             speak(q.clue);
+        }
+
+        function checkAnswer(spoken) {
+            let spokenClean = spoken.toLowerCase().replace(/[^\w\såäö]/gi, '');
+            let isCorrect = false;
+
+            if (activeQuestion && activeQuestion.keywords) {
+                isCorrect = activeQuestion.keywords.some(kw => spokenClean.includes(kw.toLowerCase()));
+            }
+
+            const resultEl = document.getElementById('voice-result');
+            if (isCorrect) {
+                resultEl.textContent = "RÄTT Svar!";
+                resultEl.style.color = "#27ae60";
+                
+                let randomPhrase = correctPhrases[Math.floor(Math.random() * correctPhrases.length)];
+                speak(randomPhrase);
+                
+                document.getElementById('modal-answer').classList.add('show');
+                document.getElementById('award-section').style.display = 'block';
+                document.getElementById('btn-show-answer').style.display = 'none';
+            } else {
+                resultEl.textContent = "FEL Svar!";
+                resultEl.style.color = "#e74c3c";
+                let randomPhrase = wrongPhrases[Math.floor(Math.random() * wrongPhrases.length)];
+                speak(randomPhrase);
+            }
         }
 
         document.getElementById('btn-show-answer').onclick = () => {
@@ -322,6 +434,9 @@
 
         function closeModal() {
             modalOverlay.classList.remove('active');
+            if (synth.speaking) synth.cancel();
+            if (recognition) { try { recognition.stop(); } catch(e) {} }
+
             if(activeCell) {
                 activeCell.classList.add('played');
                 activeCell = null;
@@ -339,7 +454,9 @@
             const played = document.querySelectorAll('.cell.played').length;
             const total = activeCategories.length * 5;
             if(played === total) {
-                speak("Spelet är slut. Bra jobbat med Vklass-utbildningen!");
+                setTimeout(() => {
+                    speak("Spelet är avslutat. Ni har nu koll på Vklass-riktlinjerna i Tyresö. Bra jobbat!");
+                }, 1000);
             }
         }
 
